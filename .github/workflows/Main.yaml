@@ -1,0 +1,54 @@
+name: Build and deploy App to AKS
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+env:
+  AZURE_CONTAINER_REGISTRY: "ACR"
+  CONTAINER_NAME: "image"
+  RESOURCE_GROUP: "rg"
+  CLUSTER_NAME: "k8"
+  DEPLOYMENT_MANIFEST_PATH: "aks/deployment.yml"
+                           
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    
+    - uses: Azure/docker-login@v1
+      with:
+        login-server: <ACR Name>
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+    
+    - run: |
+        docker build . -t <ACR>.azurecr.io/k8sflask:${{ github.sha }}
+        docker push <ACR>.azurecr.io/k8sflask:${{ github.sha }}
+      
+    # Set the target AKS cluster.
+    - uses: Azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        cluster-name: k8
+        resource-group: rg
+        
+    - uses: Azure/k8s-create-secret@v1
+      with:
+        container-registry-url: <ACR Name>
+        container-registry-username: ${{ secrets.ACR_USERNAME }}
+        container-registry-password: ${{ secrets.ACR_PASSWORD }}
+        secret-name: k8s-secret    
+        
+    
+
+    - uses: Azure/k8s-deploy@v1
+      with:
+        manifests: |
+          aks/deployment.yml
+          aks/service.yml
+        images: |
+          <ACR>.azurecr.io/k8sflask:${{ github.sha }}
