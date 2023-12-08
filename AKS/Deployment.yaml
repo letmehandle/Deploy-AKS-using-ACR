@@ -1,0 +1,22 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: gowebapi 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gowebapi
+  template:
+    metadata:
+      labels:
+        app: gowebapi 
+    spec:
+      containers:
+        - name: gowebapi 
+          image: <ACR>.azurecr.io/k8sflask
+          ports:
+          - containerPort: 80
+      imagePullSecrets:
+      - name: k8s-secret  
+          
