@@ -1,19 +1,19 @@
 apiVersion : apps/v1
 kind: Deployment
 metadata:
-  name: gowebapi 
+  name: webapi 
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: gowebapi
+      app: webapi
   template:
     metadata:
       labels:
-        app: gowebapi 
+        app: webapi 
     spec:
       containers:
-        - name: gowebapi 
+        - name: webapi 
           image: <ACR>.azurecr.io/k8sflask
           ports:
           - containerPort: 80
