@@ -10,7 +10,7 @@ env:
   CONTAINER_NAME: "image"
   RESOURCE_GROUP: "rg"
   CLUSTER_NAME: "k8"
-  DEPLOYMENT_MANIFEST_PATH: "aks/deployment.yml"
+  DEPLOYMENT_MANIFEST_PATH: "AKS/Deployment.yml"
                            
 
 jobs:
@@ -48,7 +48,7 @@ jobs:
     - uses: Azure/k8s-deploy@v1
       with:
         manifests: |
-          aks/deployment.yml
-          aks/service.yml
+          AKS/Deployment.yml
+          AKS/Service.yml
         images: |
           <ACR>.azurecr.io/k8sflask:${{ github.sha }}
